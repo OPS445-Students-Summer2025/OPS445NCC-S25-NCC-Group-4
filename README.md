@@ -1,1 +1,18 @@
 # Winter 2025 Assignment 2
+''' 
+Project Branch topography plan
+# Go to testbed branch first before making sub branches
+Main
+|
+L Testbed1-compile (main testing branch)
+|         L Backup-function-Arshan (branch for arshan)
+|         |
+|         L Logging-function-John  (branch for john)
+|         |
+|         L ...
+|         |
+|         L ...
+|
+|
+|
+'''
