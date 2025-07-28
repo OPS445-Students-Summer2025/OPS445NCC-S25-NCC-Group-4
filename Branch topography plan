@@ -1,6 +1,6 @@
 ''' 
 Project Branch topography plan
-
+# Go to testbed branch first before making sub branches
 Main
 |
 L Testbed1-compile (main testing branch)
