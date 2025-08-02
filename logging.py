@@ -5,3 +5,10 @@
 
 import datetime  
 
+def write_log(message):
+
+
+
+if __name__ == "__main__":
+    write_log("Logged successfuly.")
+
