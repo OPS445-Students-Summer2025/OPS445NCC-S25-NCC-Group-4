@@ -9,4 +9,7 @@ How to use logger2 as import
 
 from logger2 import write_log
 
-write_log("Backup Or Restore Log") #
+write_log("Backup Or Restore Log")
+
+
+from logtool import writelog
