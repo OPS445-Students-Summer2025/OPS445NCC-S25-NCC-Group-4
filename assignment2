@@ -1,0 +1,67 @@
+#!/usr/bin/env python3
+# Student ID: athapa30
+# Assignment 2 NCC Group 4
+# Input handling and path validation
+
+import argparse
+import os
+from logtool import write_log  # assuming logtool.py is in your repo
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="Data Backup and Restore Tool")
+
+    parser.add_argument('-b', '--backup', action='store_true',
+                        help='Perform backup operation')
+    parser.add_argument('-r', '--restore', action='store_true',
+                        help='Perform restore operation')
+    parser.add_argument('-s', '--source', type=str,
+                        help='Source file or directory path')
+    parser.add_argument('-d', '--destination', type=str,
+                        help='Backup or restore destination path')
+
+    args = parser.parse_args()
+    return args
+
+def validate_path(path, should_exist=True, is_dir=None):
+    if not path:
+        print("Error: Path is missing.")
+        return False
+    if should_exist and not os.path.exists(path):
+        print(f"Error: Path does not exist: {path}")
+        return False
+    if is_dir is True and not os.path.isdir(path):
+        print(f"Error: Path is not a directory: {path}")
+        return False
+    if is_dir is False and not os.path.isfile(path):
+        print(f"Error: Path is not a file: {path}")
+        return False
+    return True
+
+def main():
+    args = parse_args()
+
+    if args.backup:
+        if not validate_path(args.source, should_exist=True):
+            return
+        if not args.destination:
+            print("Error: Destination path missing.")
+            return
+        # TODO: call backup function here
+        print(f"Backup from '{args.source}' to '{args.destination}' started.")
+        write_log("backup", args.destination, "Backup operation started.")
+
+    elif args.restore:
+        if not validate_path(args.destination, should_exist=True):
+            return
+        if not args.source:
+            print("Error: Restore path missing.")
+            return
+        # TODO: call restore function here
+        print(f"Restore from '{args.destination}' to '{args.source}' started.")
+        write_log("restore", args.source, "Restore operation started.")
+
+    else:
+        print("Error: You must specify --backup or --restore.")
+
+if __name__ == "__main__":
+    main()
