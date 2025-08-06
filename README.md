@@ -5,11 +5,10 @@ logger2 is incomplete,
 featuring 
 - make log file directory
 
-How to use logger2 as import
+How to use logtool as import
 
-from logger2 import write_log
+from logtool import write_log
 
 write_log("Backup Or Restore Log")
 
 ## final version loggin tool is logtool.py
-from logtool import writelog
