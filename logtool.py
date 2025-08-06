@@ -1,29 +1,27 @@
 #!/usr/bin/env python3
-# Student ID: jgylagan
+# Student ID: athapa30
 # Assignment 2 NCC Group 4
-# Logging Function
+# logtool.py - Logging utility for backup/restore actions
 
-from datetime import datetime  # timestamps
-import os  # folder and path handling
+from datetime import datetime
+import os
 
 def write_log(operation_type, target_path, message):
-     # create a timestamp for naming and logging
+    """
+    Write a log entry with timestamp, operation type, target path, and message.
+    Logs are saved in ~/Desktop/Log_History with a filename including operation type and timestamp.
+    """
     timestamp = datetime.now().strftime("%Y%m%d_%H%M")
+    
+    desktop = os.path.join(os.path.expanduser("~"), "Desktop")
+    log_folder = os.path.join(desktop, "Log_History")
+    os.makedirs(log_folder, exist_ok=True)
 
-       # log folder creation on desktop
-    desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
-    log_folder = os.path.join(desktop_path, "Log_History")
-    os.makedirs(log_folder, exist_ok=True)  # make folder if not exist
-
-     # log filename will show the operation type and timestamp
     filename = f"{operation_type.upper()}_{timestamp}.txt"
     log_path = os.path.join(log_folder, filename)
-    # logs can be labeled as BACKUP, RESTORE or FAIL
 
-      # set the log entry format
     log_entry = f"[{timestamp}] [{operation_type}] {target_path}\nMessage: {message}"
 
-     # if the path exists, log the file list and sizes
     if target_path and os.path.isdir(target_path):
         log_entry += f"\n\nContents of {target_path}:\n"
         for item in os.listdir(target_path):
@@ -33,14 +31,13 @@ def write_log(operation_type, target_path, message):
                 log_entry += f"  {item} - {size} bytes\n"
     elif target_path:
         log_entry += f"\n\n[Target folder not found: {target_path}]"
-        #
 
-    # write log to log_path (on Desktop)
     with open(log_path, "w") as f:
         f.write(log_entry + "\n")
 
     print(f"log written to: {log_path}")
 
-# main block for testing directly
+# For testing logging alone
 if __name__ == "__main__":
-    write_log("backup", "/home/jgylagan/Desktop/testlogfolder", "Testing - backup/restore complete.")
+    write_log("backup", "/home/athapa30/Desktop/testfolder", "Backup test log.")
+
