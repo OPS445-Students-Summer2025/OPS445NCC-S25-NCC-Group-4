@@ -11,5 +11,5 @@ from logger2 import write_log
 
 write_log("Backup Or Restore Log")
 
-
+## final version loggin tool is logtool.py
 from logtool import writelog
