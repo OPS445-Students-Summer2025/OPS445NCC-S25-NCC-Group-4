@@ -32,12 +32,18 @@ def create_backup(source_path, backup_path):
         if choice in ('normal', 'tar'):
             break
         print("Invalid input. Please enter 'normal' or 'tar'.")
-
-    #if user chooses to do tar will proceed to make the file a tar file
+    
     if choice == 'tar':
+
+        
+
         # if the file is not tar file make it a tar file
         if not backup_path.endswith('.tar.gz'):
             backup_path += '.tar.gz'
+        if not confirm_overwrite(backup_path):
+            print("Backup cancelled.")
+            returnb
+        
         try:
             #writes into the file name and adds a tar extension
             with tarfile.open(backup_path, "w:gz") as tar:
@@ -48,14 +54,25 @@ def create_backup(source_path, backup_path):
             
         except FileNotFoundError:
                     print(f"Failed to tar archive file")
-        
+
+    
+    #if user inputed n into the overwrite prompt cancels backup
+    
+   
     else:
+        if not confirm_overwrite(backup_path):
+            print("Backup cancelled.")
+
+
+      
+            
         #if user inputs a directory backups the whole directory
         if os.path.isdir(source_path):
             shutil.copytree(source_path, backup_path)
             print(f"Directory backup created at: {backup_path}")
             write_log("backup", backup_path, "Backup completed successfully.") 
             
+         
          #if user inputs a file backups the whole directory
         elif os.path.isfile(source_path):
             shutil.copy2(source_path, backup_path)
@@ -75,8 +92,10 @@ def restore_backup(backup_path, restore_path):
                 tar.extractall(path=restore_path)
             print(f"Tar archive extracted to: {restore_path}")
             write_log("restore", restore_path, "Restore completed successfully.")
+            return
         except FileNotFoundError:
                     print(f"Failed to extract tar file")
+                    return
 
     if os.path.isdir(backup_path):
         shutil.copytree(backup_path, restore_path)
