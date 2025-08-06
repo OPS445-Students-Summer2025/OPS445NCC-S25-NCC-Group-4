@@ -1,15 +1,13 @@
-# Winter 2025 Assignment 2
-Logging is base 
+## Input Handling (athapa30)
 
-logger2 is incomplete, 
-featuring 
-- make log file directory
+- Used `argparse` to parse command-line arguments:  
+  `--backup`, `--restore`, `--source`, and `--destination`.
 
-How to use logger2 as import
+- Validates that `--source` and `--destination` paths exist (or are valid) before proceeding.
 
-from logger2 import write_log
+- If invalid or missing arguments, prints helpful error messages and usage.
 
-write_log("Backup Or Restore Log")
+- Calls `write_log()` from `logtool.py` to log backup and restore operations with timestamps.
 
-## final version loggin tool is logtool.py
-from logtool import writelog
+- Follows instructions to keep code readable, modular, and documented.
+
