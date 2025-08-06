@@ -1,67 +1,81 @@
 #!/usr/bin/env python3
 # Student ID: athapa30
 # Assignment 2 NCC Group 4
-# Input handling and path validation
+# assignment2.py - Handles input and validation for backup/restore
 
 import argparse
 import os
-from logtool import write_log  # assuming logtool.py is in your repo
+from logtool import write_log
 
-def parse_args():
-    parser = argparse.ArgumentParser(description="Data Backup and Restore Tool")
-
-    parser.add_argument('-b', '--backup', action='store_true',
-                        help='Perform backup operation')
-    parser.add_argument('-r', '--restore', action='store_true',
-                        help='Perform restore operation')
-    parser.add_argument('-s', '--source', type=str,
-                        help='Source file or directory path')
-    parser.add_argument('-d', '--destination', type=str,
-                        help='Backup or restore destination path')
-
-    args = parser.parse_args()
-    return args
-
-def validate_path(path, should_exist=True, is_dir=None):
-    if not path:
-        print("Error: Path is missing.")
-        return False
-    if should_exist and not os.path.exists(path):
-        print(f"Error: Path does not exist: {path}")
-        return False
-    if is_dir is True and not os.path.isdir(path):
-        print(f"Error: Path is not a directory: {path}")
-        return False
-    if is_dir is False and not os.path.isfile(path):
-        print(f"Error: Path is not a file: {path}")
-        return False
+def validate_path(path, should_exist=True):
+    """
+    Validate if a path exists (or not depending on should_exist).
+    Prints error and returns False if invalid.
+    """
+    if should_exist:
+        if not os.path.exists(path):
+            print(f"Error: Path does not exist: {path}")
+            return False
+    else:
+        # For destination paths, check if parent directory exists
+        parent_dir = os.path.dirname(path) or "."
+        if not os.path.exists(parent_dir):
+            print(f"Error: Destination directory does not exist: {parent_dir}")
+            return False
     return True
 
+def parse_arguments():
+    """
+    Parses command line arguments using argparse.
+    Returns args if valid, else exits.
+    """
+    parser = argparse.ArgumentParser(description="Backup and Restore Script")
+    
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument('--backup', action='store_true', help='Perform a backup operation')
+    group.add_argument('--restore', action='store_true', help='Perform a restore operation')
+    
+    parser.add_argument('--source', type=str, help='Source path for backup or restore')
+    parser.add_argument('--destination', type=str, help='Destination path for backup or restore')
+    
+    args = parser.parse_args()
+
+    # Validate paths
+    if args.backup:
+        if not args.source or not validate_path(args.source, True):
+            print("Backup requires a valid --source path.")
+            parser.print_help()
+            exit(1)
+        if not args.destination or not validate_path(args.destination, False):
+            print("Backup requires a valid --destination path.")
+            parser.print_help()
+            exit(1)
+
+    if args.restore:
+        if not args.source or not validate_path(args.source, True):
+            print("Restore requires a valid --source path.")
+            parser.print_help()
+            exit(1)
+        if not args.destination or not validate_path(args.destination, False):
+            print("Restore requires a valid --destination path.")
+            parser.print_help()
+            exit(1)
+    
+    return args
+
 def main():
-    args = parse_args()
+    args = parse_arguments()
 
     if args.backup:
-        if not validate_path(args.source, should_exist=True):
-            return
-        if not args.destination:
-            print("Error: Destination path missing.")
-            return
-        # TODO: call backup function here
-        print(f"Backup from '{args.source}' to '{args.destination}' started.")
-        write_log("backup", args.destination, "Backup operation started.")
-
+        print(f"Backing up from {args.source} to {args.destination} ...")
+        # Call your backup function here or just log for now
+        write_log("backup", args.source, f"Backup started to {args.destination}")
+    
     elif args.restore:
-        if not validate_path(args.destination, should_exist=True):
-            return
-        if not args.source:
-            print("Error: Restore path missing.")
-            return
-        # TODO: call restore function here
-        print(f"Restore from '{args.destination}' to '{args.source}' started.")
-        write_log("restore", args.source, "Restore operation started.")
-
-    else:
-        print("Error: You must specify --backup or --restore.")
+        print(f"Restoring from {args.source} to {args.destination} ...")
+        # Call your restore function here or just log for now
+        write_log("restore", args.source, f"Restore started to {args.destination}")
 
 if __name__ == "__main__":
     main()
+
