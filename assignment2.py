@@ -42,7 +42,7 @@ def create_backup(source_path, backup_path):
             backup_path += '.tar.gz'
         if not confirm_overwrite(backup_path):
             print("Backup cancelled.")
-            returnb
+            return
         
         try:
             #writes into the file name and adds a tar extension
