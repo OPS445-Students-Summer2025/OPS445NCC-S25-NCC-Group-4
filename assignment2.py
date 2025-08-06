@@ -1,20 +1,21 @@
 import shutil
 import os
 import tarfile 
-
+from logtool import write_log
 
 def confirm_overwrite(path):
 #when a file with the same name is there prompt user to overwrite
     if not os.path.exists(path):
         return True  # No file to overwrite, so no need to ask
     while True:
-        response = input("File already exists. Overwrite? [y/n]: ").strip().lower()
-        if response == 'y':
+        prompt = input("File already exists. Overwrite? [y/n]: ").strip().lower()
+        if prompt == 'y':
             return True
-        elif response == 'n':
+        elif prompt == 'n':
             return False
         else:
             print("Invalid input. Please enter 'y' or 'n'.")
+
 
 
 #backup function 
@@ -25,33 +26,68 @@ def create_backup(source_path, backup_path):
         print(f"Source path {source_path} does not exist!")
         return
     
-    #if user inputed n into the overwrite prompt cancels backup
-    if not confirm_overwrite(backup_path):
-        print("Backup cancelled.")
-        return
-    
-    #if user inputs a directory and not a file backups the whole directory
-    if os.path.isdir(source_path):
-        shutil.copytree(source_path, backup_path)
-        print(f"Directory backup created at: {backup_path}")
-    #if user inputs a file and not a directory backups the whole directory
-    elif os.path.isfile(source_path):
-        shutil.copy2(source_path, backup_path)
-        print(f"File backup created at: {backup_path}")
+    #asks user if they want make their backup a tar file
+    while True:
+        choice = input("Back up normally or compress as tar.gz? (enter 'normal' or 'tar'): ").strip().lower()
+        if choice in ('normal', 'tar'):
+            break
+        print("Invalid input. Please enter 'normal' or 'tar'.")
+
+    #if user chooses to do tar will proceed to make the file a tar file
+    if choice == 'tar':
+        # if the file is not tar file make it a tar file
+        if not backup_path.endswith('.tar.gz'):
+            backup_path += '.tar.gz'
+        try:
+            #writes into the file name and adds a tar extension
+            with tarfile.open(backup_path, "w:gz") as tar:
+                base_name = os.path.basename(source_path.rstrip(os.sep))
+                tar.add(source_path, arcname=base_name)
+            print(f"Compressed backup created at: {backup_path}")
+            write_log("backup", backup_path, "Backup completed successfully.") 
+            
+        except FileNotFoundError:
+                    print(f"Failed to tar archive file")
+        
     else:
-        print(f"Invalid source path: {source_path}")
+        #if user inputs a directory backups the whole directory
+        if os.path.isdir(source_path):
+            shutil.copytree(source_path, backup_path)
+            print(f"Directory backup created at: {backup_path}")
+            write_log("backup", backup_path, "Backup completed successfully.") 
+            
+         #if user inputs a file backups the whole directory
+        elif os.path.isfile(source_path):
+            shutil.copy2(source_path, backup_path)
+            print(f"File backup created at: {backup_path}")
+            write_log("backup", backup_path, "Backup completed successfully.") 
+            
+            
+        else:
+            print(f"Invalid source path: {source_path}")
 
 # Restores files and uncompresses if need be
 def restore_backup(backup_path, restore_path):
-    #if user inputs a directory and not a file restores the whole directory
+    # Check if backup_path is a tar.gz archive
+    if os.path.isfile(backup_path) and backup_path.endswith(('.tar.gz', '.tgz')):
+        try:
+            with tarfile.open(backup_path, "r:gz") as tar:
+                tar.extractall(path=restore_path)
+            print(f"Tar archive extracted to: {restore_path}")
+            write_log("restore", restore_path, "Restore completed successfully.")
+        except FileNotFoundError:
+                    print(f"Failed to extract tar file")
+
     if os.path.isdir(backup_path):
         shutil.copytree(backup_path, restore_path)
         print(f"Directory restored at: {restore_path}")
+        write_log("restore", restore_path, "Restore completed successfully.")
     
-    #if user inputs a file and not a directory restores the whole directory    
+    #if user inputs a file restores the whole directory    
     elif os.path.isfile(backup_path):
         shutil.copy2(backup_path, restore_path)
         print(f"File restored at: {restore_path}")
+        write_log("restore", restore_path, "Restore completed successfully.")
     else:
         print(f"Invalid backup path: {backup_path}")
 
