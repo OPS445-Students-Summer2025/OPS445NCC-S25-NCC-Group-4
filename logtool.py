@@ -5,6 +5,7 @@
 
 from datetime import datetime  # timestamps
 import os  # folder and path handling
+import tarfile  # must read contents of tar.gz tatget
 
 def write_log(operation_type, target_path, message):
      # create a timestamp for naming and logging
@@ -31,6 +32,17 @@ def write_log(operation_type, target_path, message):
             if os.path.isfile(full_path):
                 size = os.path.getsize(full_path)
                 log_entry += f"  {item} - {size} bytes\n"
+                
+                # to handle targets that are tar.gz
+    elif target_path.endswith(".tar.gz") and os.path.isfile(target_path):
+        try:
+            log_entry += f"\n\nContents of TAR archive {target_path}:\n"
+            with tarfile.open(target_path, "r:gz") as tar:
+                for member in tar.getmembers():
+                    log_entry += f"  {member.name} - {member.size} bytes\n"
+        except Exception as e:
+            log_entry += f"\n\n[Error reading tar.gz contents: {e}]\n"
+
     elif target_path:
         log_entry += f"\n\n[Target folder not found: {target_path}]"
         #
