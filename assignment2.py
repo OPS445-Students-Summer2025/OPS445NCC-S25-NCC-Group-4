@@ -1,3 +1,7 @@
+#!/usr/bin/env python3
+# Student ID: ahassanzadeh-langrud
+# Assignment 2 NCC Group 4
+
 import shutil
 import os
 import tarfile 
